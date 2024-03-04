@@ -25,6 +25,8 @@ from pdfminer3.pdfinterp import PDFPageInterpreter
 from pdfminer3.converter import TextConverter
 from streamlit_tags import st_tags
 from PIL import Image
+import streamlit as st
+import re  # for regular expressions
 # pre stored data for prediction purposes
 from Courses import ds_course,web_course,android_course,ios_course,uiux_course,resume_videos,interview_videos
 import nltk
@@ -213,9 +215,29 @@ def run():
     if choice == 'User':
         
         # Collecting Miscellaneous Information
+        def is_valid_email(email):
+            # Use a simple regular expression for email validation
+            email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+            return re.match(email_pattern, email)
+
+        def is_valid_mobile_number(mobile_number):
+            # Use a simple regular expression for mobile number validation
+            mobile_pattern = r'^\d{10}$'
+            return re.match(mobile_pattern, mobile_number)
+        
         act_name = st.text_input('Name*')
         act_mail = st.text_input('Mail*')
+        if is_valid_email(act_mail):
+            pass
+        else:
+            st.warning('Please enter a valid email')
+
         act_mob  = st.text_input('Mobile Number*')
+        if is_valid_mobile_number(act_mob):
+            pass
+        else:
+            st.warning('Please enter a valid 10-digit mobile number')
+
         sec_token = secrets.token_urlsafe(12)
         host_name = socket.gethostname()
         ip_add = socket.gethostbyname(host_name)
@@ -264,8 +286,10 @@ def run():
                 try:
                     st.text('Name: '+resume_data['name'])
                     st.text('Email: ' + resume_data['email'])
-                    st.text('Contact: ' + resume_data['mobile_number'])
-                    st.text('Degree: '+str(resume_data['degree']))                    
+                    st.text('Contact: ' + resume_data['mobile_number']) 
+                    
+                    degree = resume_data.get('degree')
+                    st.text('Degree: ' + str(degree))                   
                     st.text('Resume pages: '+str(resume_data['no_of_pages']))
 
                 except:
